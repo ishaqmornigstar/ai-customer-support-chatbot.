@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>AI Customer Support Chatbot</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat-container {
+            width: 420px;
+            max-width: 95%;
+            height: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px #0002;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #2563eb;
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .chat-header small {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #dbeafe;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .message {
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .bot {
+            background: #e2e8f0;
+            color: #1e293b;
+            margin-right: auto;
+        }
+
+        .user {
+            background: #2563eb;
+            color: white;
+            margin-left: auto;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="chat-header">
+        🤖 AI Customer Support
+        <small>Online • Ready to help</small>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">
+            Hello! 👋 How can I help you today?
+        </div>
+    </div>
+
+    <form class="chat-input" id="chatForm">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Type your message..."
+            autocomplete="off"
+            required
+        >
+        <button type="submit" id="sendButton">
+            Send
+        </button>
+    </form>
+
+</div>
+
+<script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+    const chatForm = document.getElementById("chatForm");
+    const sendButton = document.getElementById("sendButton");
+
+    // Add a message to the chat window
+    function addMessage(text, sender) {
+        const message = document.createElement("div");
+
+        message.className = "message " + sender;
+        message.textContent = text;
+
+        chatBox.appendChild(message);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Send customer message to Python backend
+    async function sendMessage(event) {
+        event.preventDefault();
+
+        const message = userInput.value.trim();
+
+        if (!message) {
+            return;
+        }
+
+        addMessage(message, "user");
+        userInput.value = "";
+
+        sendButton.disabled = true;
+
+        try {
+           const response = await fetch(
+                     "/chat",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("API request failed");
+            }
+
+            const data = await response.json();
+
+            addMessage(data.reply, "bot");
+
+        } catch (error) {
+            addMessage(
+                "Unable to connect to the server. Please try again.",
+                "bot"
+            );
+            console.error(error);
+
+        } finally {
+            sendButton.disabled = false;
+            userInput.focus();
+        }
+    }
+
+    chatForm.addEventListener("submit", sendMessage);
+</script>
+
+</body>
+</html>

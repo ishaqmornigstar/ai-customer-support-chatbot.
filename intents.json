@@ -1,0 +1,134 @@
+
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "good morning",
+        "good evening",
+        "how are you",
+        "hello support",
+        "hi chatbot",
+        "can you help me",
+        "I need help"
+      ],
+      "responses": [
+        "Hello! How can I help you today?",
+        "Hi! Welcome to customer support."
+      ]
+    },
+    {
+      "tag": "order_tracking",
+      "patterns": [
+        "where is my order",
+        "track my package",
+        "track my parcel",
+        "order tracking",
+        "order status",
+        "where is my parcel",
+        "when will my order arrive",
+        "my package has not arrived",
+        "delivery tracking",
+        "I want to check my order"
+      ],
+      "responses": [
+        "Please provide your order number to our support team for tracking.",
+        "You can check your order status using your tracking number."
+      ]
+    },
+    {
+      "tag": "refund",
+      "patterns": [
+        "I want a refund",
+        "refund my money",
+        "how to get a refund",
+        "refund status",
+        "return my money",
+        "I need my money back",
+        "request a refund",
+        "how can I get my money back",
+        "refund process",
+        "payment refund"
+      ],
+      "responses": [
+        "I can help explain the refund process. Please contact our support team with your order number."
+      ]
+    },
+    {
+      "tag": "damaged_product",
+      "patterns": [
+        "my product is damaged",
+        "I received a broken item",
+        "product is defective",
+        "damaged package",
+        "broken product",
+        "item arrived damaged",
+        "my item is not working",
+        "received a faulty product",
+        "product has a defect",
+        "I received a damaged order"
+      ],
+      "responses": [
+        "I'm sorry about that. Please contact our support team with your order number and photos of the damaged item."
+      ]
+    },
+    {
+      "tag": "cancellation",
+      "patterns": [
+        "cancel my order",
+        "I want to cancel",
+        "how to cancel an order",
+        "order cancellation",
+        "stop my order",
+        "cancel my purchase",
+        "I don't want this order",
+        "cancel delivery",
+        "can I cancel my order",
+        "please cancel my order"
+      ],
+      "responses": [
+        "To request cancellation, please contact our support team with your order number."
+      ]
+    },
+    {
+      "tag": "payment",
+      "patterns": [
+        "payment failed",
+        "payment problem",
+        "money deducted",
+        "transaction failed",
+        "payment not successful",
+        "I cannot make payment",
+        "payment error",
+        "charged twice",
+        "payment issue",
+        "billing problem"
+      ],
+      "responses": [
+        "I'm sorry you're experiencing payment issues. Please contact our billing support team. Do not share card details or passwords in chat."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "thank you goodbye",
+        "exit",
+        "talk later",
+        "bye bye",
+        "have a nice day",
+        "thanks bye",
+        "see you later"
+      ],
+      "responses": [
+        "Thank you for contacting us. Have a great day!",
+        "Goodbye! Feel free to contact us again."
+      ]
+    }
+  ]
+}
