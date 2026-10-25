@@ -1,13 +1,40 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
-    <title>AI Customer Support Chatbot</title>
+
+    <title>AI Customer Support | Version 2.0</title>
 
     <style>
+        :root {
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --sidebar: #0f172a;
+            --sidebar-button: #1e293b;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --bot-background: #ffffff;
+            --input-background: #ffffff;
+            --primary: #2563eb;
+        }
+
+        body.dark {
+            --background: #0b1120;
+            --surface: #1e293b;
+            --sidebar: #020617;
+            --sidebar-button: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #334155;
+            --bot-background: #334155;
+            --input-background: #0f172a;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -15,202 +42,1156 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #eef2f7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
         }
 
-        .chat-container {
-            width: 420px;
-            max-width: 95%;
-            height: 600px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px #0002;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-header {
-            background: #2563eb;
-            color: white;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .chat-header small {
-            display: block;
-            font-size: 12px;
-            margin-top: 5px;
-            color: #dbeafe;
-        }
-
-        .chat-box {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f8fafc;
-        }
-
-        .message {
-            padding: 12px 15px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            max-width: 85%;
-            line-height: 1.5;
-            overflow-wrap: anywhere;
-        }
-
-        .bot {
-            background: #e2e8f0;
-            color: #1e293b;
-            margin-right: auto;
-        }
-
-        .user {
-            background: #2563eb;
-            color: white;
-            margin-left: auto;
-        }
-
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #ddd;
-            gap: 10px;
-        }
-
-        input {
-            flex: 1;
-            min-width: 0;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
+        button,
+        input,
+        textarea {
+            font: inherit;
         }
 
         button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 12px 18px;
-            border-radius: 8px;
             cursor: pointer;
         }
 
-        button:hover {
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 270px;
+            flex-shrink: 0;
+            background: var(--sidebar);
+            color: white;
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px 25px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            background: #2563eb;
+            border-radius: 13px;
+            font-size: 23px;
+        }
+
+        .brand h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .brand p {
+            margin: 5px 0 0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: var(--sidebar-button);
+            color: #e2e8f0;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .sidebar button:hover {
+            background: #334155;
+        }
+
+        .sidebar button.primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .sidebar button.primary:hover {
             background: #1d4ed8;
         }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 15px 10px 0;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* MAIN CHAT */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 17px 25px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .header h1 {
+            font-size: 19px;
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #16a34a;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: min(75%, 650px);
+            padding: 13px 17px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.65;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .message.bot {
+            background: var(--bot-background);
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .typing {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            min-height: 45px;
+        }
+
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--muted);
+            border-radius: 50%;
+            animation: bounce 1.2s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            30% {
+                transform: translateY(-7px);
+                opacity: 1;
+            }
+        }
+
+        /* QUICK ACTIONS */
+
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            padding: 0 20px 14px;
+        }
+
+        .quick-actions button {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 9px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .quick-actions button:hover {
+            border-color: var(--primary);
+        }
+
+        /* INPUT */
+
+        .input-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 17px 20px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-area input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 15px;
+            background: var(--input-background);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            outline: none;
+        }
+
+        .input-area input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-area button {
+            border: none;
+            border-radius: 11px;
+            height: 46px;
+        }
+
+        .voice-button {
+            width: 46px;
+            background: var(--background);
+            color: var(--text);
+            border: 1px solid var(--border) !important;
+            font-size: 19px;
+        }
+
+        .voice-button.listening {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .send-button {
+            background: var(--primary);
+            color: white;
+            padding: 0 24px;
+            font-weight: bold;
+        }
+
+        /* TICKET MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: var(--surface);
+            color: var(--text);
+            padding: 25px;
+            border-radius: 16px;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .modal-content p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            height: 140px;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--input-background);
+            color: var(--text);
+            resize: vertical;
+            outline: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .modal-actions button {
+            padding: 12px 17px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: var(--primary);
+        }
+
+        .modal-actions .cancel {
+            background: #64748b;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .brand {
+                width: 100%;
+                padding: 4px 5px 8px;
+            }
+
+            .brand-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .brand h2 {
+                font-size: 15px;
+            }
+
+            .sidebar button {
+                width: auto;
+                flex: 1 1 auto;
+                padding: 9px;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .sidebar-footer {
+                display: none;
+            }
+
+            .header {
+                padding: 13px;
+            }
+
+            .header h1 {
+                font-size: 16px;
+            }
+
+            .messages {
+                padding: 13px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .quick-actions {
+                padding: 0 10px 10px;
+            }
+
+            .input-area {
+                padding: 10px;
+                gap: 7px;
+            }
+
+            .send-button {
+                padding: 0 13px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="chat-container">
+<div class="app">
 
-    <div class="chat-header">
-        🤖 AI Customer Support
-        <small>Online • Ready to help</small>
-    </div>
+    <!-- SIDEBAR -->
 
-    <div class="chat-box" id="chatBox">
-        <div class="message bot">
-            Hello! 👋 How can I help you today?
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🤖</div>
+            <div>
+                <h2>AI Support</h2>
+                <p>Customer Assistant v2.0</p>
+            </div>
         </div>
-    </div>
 
-    <form class="chat-input" id="chatForm">
-        <input
-            type="text"
-            id="userInput"
-            placeholder="Type your message..."
-            autocomplete="off"
-            required
-        >
-        <button type="submit" id="sendButton">
-            Send
+        <button class="primary" onclick="newChat()">
+            ➕ New Chat
         </button>
-    </form>
+
+        <button onclick="loadHistory()">
+            📜 Chat History
+        </button>
+
+        <button onclick="openTicketModal()">
+            🎫 Create Ticket
+        </button>
+
+        <button onclick="viewTickets()">
+            📋 My Tickets
+        </button>
+
+        <button onclick="trackOrderPrompt()">
+            📦 Track Order
+        </button>
+
+        <button id="themeButton" onclick="toggleDarkMode()">
+            🌙 Dark Mode
+        </button>
+
+        <div class="sidebar-footer">
+            AI Customer Support Chatbot<br>
+            Python + FastAPI + SQLite<br>
+            Machine Learning + Generative AI
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CHAT -->
+
+    <main class="main">
+
+        <header class="header">
+            <div>
+                <h1>AI Customer Support</h1>
+                <p>Ask questions, track orders, and get help.</p>
+            </div>
+
+            <div class="status" id="serverStatus">
+                <span class="status-dot"></span>
+                <span id="statusText">Checking...</span>
+            </div>
+        </header>
+
+        <div class="messages"
+             id="messages"
+             aria-live="polite">
+        </div>
+
+        <div class="quick-actions">
+
+            <button onclick="sendQuickMessage('Hello')">
+                👋 Hello
+            </button>
+
+            <button onclick="trackOrderPrompt()">
+                📦 Track Order
+            </button>
+
+            <button onclick="sendQuickMessage('How can I get a refund?')">
+                💰 Refund
+            </button>
+
+            <button onclick="openTicketModal()">
+                🎫 Support Ticket
+            </button>
+
+        </div>
+
+        <form class="input-area" id="chatForm">
+
+            <button
+                type="button"
+                class="voice-button"
+                id="voiceButton"
+                onclick="startVoice()"
+                title="Speak your message"
+                aria-label="Speak your message">
+                🎤
+            </button>
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Type your message..."
+                maxlength="2000"
+                autocomplete="off"
+                required
+            >
+
+            <button
+                type="submit"
+                class="send-button"
+                id="sendButton">
+                Send ➤
+            </button>
+
+        </form>
+
+    </main>
 
 </div>
 
+
+<!-- SUPPORT TICKET MODAL -->
+
+<div class="modal" id="ticketModal">
+
+    <div class="modal-content"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="ticketTitle">
+
+        <h2 id="ticketTitle">🎫 Create Support Ticket</h2>
+
+        <p>Describe your issue and our support team can review it.</p>
+
+        <textarea
+            id="ticketIssue"
+            placeholder="Example: My laptop arrived damaged."
+            maxlength="2000">
+        </textarea>
+
+        <div class="modal-actions">
+
+            <button class="cancel"
+                    onclick="closeTicketModal()">
+                Cancel
+            </button>
+
+            <button id="ticketSubmitButton"
+                    onclick="createSupportTicket()">
+                Submit Ticket
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
-    const chatBox = document.getElementById("chatBox");
-    const userInput = document.getElementById("userInput");
-    const chatForm = document.getElementById("chatForm");
+
+    // ========================================
+    // 1. ELEMENT REFERENCES
+    // ========================================
+
+    const messages = document.getElementById("messages");
+    const messageInput = document.getElementById("messageInput");
     const sendButton = document.getElementById("sendButton");
+    const chatForm = document.getElementById("chatForm");
+    const voiceButton = document.getElementById("voiceButton");
 
-    // Add a message to the chat window
-    function addMessage(text, sender) {
-        const message = document.createElement("div");
+    let sessionId = sessionStorage.getItem("chatSessionId");
 
-        message.className = "message " + sender;
-        message.textContent = text;
-
-        chatBox.appendChild(message);
-        chatBox.scrollTop = chatBox.scrollHeight;
+    if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        sessionStorage.setItem("chatSessionId", sessionId);
     }
 
-    // Send customer message to Python backend
-    async function sendMessage(event) {
-        event.preventDefault();
+    let sending = false;
 
-        const message = userInput.value.trim();
+
+    // ========================================
+    // 2. DISPLAY CHAT MESSAGES
+    // ========================================
+
+    function addMessage(text, sender) {
+
+        const div = document.createElement("div");
+
+        div.className = "message " + sender;
+        div.textContent = text;
+
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+
+        return div;
+    }
+
+
+    function showWelcome() {
+        addMessage(
+            "Hello! 👋 Welcome to AI Customer Support.\n" +
+            "I can help you track orders, answer questions, " +
+            "and create support tickets.",
+            "bot"
+        );
+    }
+
+
+    // ========================================
+    // 3. TYPING INDICATOR
+    // ========================================
+
+    function showTyping() {
+
+        const typing = document.createElement("div");
+
+        typing.className = "message bot typing";
+        typing.setAttribute("aria-label", "AI is typing");
+
+        for (let i = 0; i < 3; i++) {
+            typing.appendChild(document.createElement("span"));
+        }
+
+        messages.appendChild(typing);
+        messages.scrollTop = messages.scrollHeight;
+
+        return typing;
+    }
+
+
+    // ========================================
+    // 4. SEND MESSAGE
+    // ========================================
+
+    async function sendMessage(event) {
+
+        if (event) {
+            event.preventDefault();
+        }
+
+        if (sending) {
+            return;
+        }
+
+        const message = messageInput.value.trim();
 
         if (!message) {
             return;
         }
 
-        addMessage(message, "user");
-        userInput.value = "";
+        // Capture the session for this request
+        const currentSession = sessionId;
 
+        addMessage(message, "user");
+
+        messageInput.value = "";
         sendButton.disabled = true;
+        sending = true;
+
+        const typing = showTyping();
 
         try {
-           const response = await fetch(
-                     "/chat",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: message
-                    })
-                }
-            );
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: currentSession
+                })
+            });
 
             if (!response.ok) {
-                throw new Error("API request failed");
+                throw new Error("Chat request failed");
             }
 
             const data = await response.json();
 
-            addMessage(data.reply, "bot");
+            typing.remove();
+
+            // Don't show an old reply in a new chat
+            if (currentSession === sessionId) {
+                addMessage(data.reply, "bot");
+            }
 
         } catch (error) {
-            addMessage(
-                "Unable to connect to the server. Please try again.",
-                "bot"
-            );
+
+            typing.remove();
+
+            if (currentSession === sessionId) {
+                addMessage(
+                    "Sorry, something went wrong. Please try again.",
+                    "bot"
+                );
+            }
+
             console.error(error);
 
         } finally {
+
             sendButton.disabled = false;
-            userInput.focus();
+            sending = false;
+            messageInput.focus();
         }
     }
 
     chatForm.addEventListener("submit", sendMessage);
+
+
+    // ========================================
+    // 5. QUICK MESSAGES
+    // ========================================
+
+    function sendQuickMessage(text) {
+
+        if (sending) {
+            return;
+        }
+
+        messageInput.value = text;
+        chatForm.requestSubmit();
+    }
+
+
+    // ========================================
+    // 6. LOAD CHAT HISTORY
+    // ========================================
+
+    async function loadHistory() {
+
+        const currentSession = sessionId;
+
+        try {
+
+            const response = await fetch(
+                "/history/" + encodeURIComponent(currentSession)
+            );
+
+            if (!response.ok) {
+                throw new Error("History request failed");
+            }
+
+            const data = await response.json();
+
+            if (currentSession !== sessionId || sending) {
+                return;
+            }
+
+            messages.replaceChildren();
+
+            if (!data.history || data.history.length === 0) {
+                showWelcome();
+                return;
+            }
+
+            data.history.forEach(chat => {
+                addMessage(chat.user, "user");
+                addMessage(chat.bot, "bot");
+            });
+
+        } catch (error) {
+
+            console.error(error);
+
+            if (currentSession === sessionId && !sending) {
+                messages.replaceChildren();
+                showWelcome();
+                addMessage(
+                    "Could not load saved chat history.",
+                    "bot"
+                );
+            }
+        }
+    }
+
+
+    // ========================================
+    // 7. NEW CHAT
+    // ========================================
+
+    function newChat() {
+
+        if (sending) {
+            alert("Please wait for the current reply.");
+            return;
+        }
+
+        sessionId = crypto.randomUUID();
+
+        sessionStorage.setItem(
+            "chatSessionId",
+            sessionId
+        );
+
+        messages.replaceChildren();
+        showWelcome();
+        messageInput.focus();
+    }
+
+
+    // ========================================
+    // 8. TRACK ORDER
+    // ========================================
+
+    function trackOrderPrompt() {
+
+        if (sending) {
+            return;
+        }
+
+        const orderId = prompt(
+            "Enter your order ID (Example: ORD101):"
+        );
+
+        if (!orderId || !orderId.trim()) {
+            return;
+        }
+
+        messageInput.value =
+            "Track my order " + orderId.trim();
+
+        chatForm.requestSubmit();
+    }
+
+
+    // ========================================
+    // 9. SUPPORT TICKET MODAL
+    // ========================================
+
+    function openTicketModal() {
+
+        document.getElementById(
+            "ticketModal"
+        ).classList.add("open");
+
+        document.getElementById(
+            "ticketIssue"
+        ).focus();
+    }
+
+
+    function closeTicketModal() {
+
+        document.getElementById(
+            "ticketModal"
+        ).classList.remove("open");
+    }
+
+
+    // ========================================
+    // 10. CREATE SUPPORT TICKET
+    // ========================================
+
+    async function createSupportTicket() {
+
+        const issueInput = document.getElementById(
+            "ticketIssue"
+        );
+
+        const submitButton = document.getElementById(
+            "ticketSubmitButton"
+        );
+
+        const issue = issueInput.value.trim();
+
+        if (!issue) {
+            alert("Please describe your issue.");
+            return;
+        }
+
+        const currentSession = sessionId;
+        submitButton.disabled = true;
+
+        try {
+
+            const response = await fetch("/ticket", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    session_id: currentSession,
+                    issue: issue
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Ticket creation failed");
+            }
+
+            const data = await response.json();
+
+            closeTicketModal();
+            issueInput.value = "";
+
+            if (currentSession === sessionId) {
+                addMessage(
+                    "🎫 Support Ticket #" + data.ticket_id +
+                    " created successfully!\nStatus: " +
+                    data.status,
+                    "bot"
+                );
+            }
+
+        } catch (error) {
+
+            alert("Unable to create support ticket.");
+            console.error(error);
+
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+
+    // ========================================
+    // 11. VIEW SUPPORT TICKETS
+    // ========================================
+
+    async function viewTickets() {
+
+        const currentSession = sessionId;
+
+        try {
+
+            const response = await fetch(
+                "/tickets/" + encodeURIComponent(currentSession)
+            );
+
+            if (!response.ok) {
+                throw new Error("Tickets request failed");
+            }
+
+            const data = await response.json();
+
+            if (currentSession !== sessionId) {
+                return;
+            }
+
+            if (!data.tickets || data.tickets.length === 0) {
+                addMessage(
+                    "You have no support tickets yet.",
+                    "bot"
+                );
+                return;
+            }
+
+            let text = "📋 Your Support Tickets:\n\n";
+
+            data.tickets.forEach(ticket => {
+                text +=
+                    "Ticket #" + ticket.ticket_id + "\n" +
+                    "Issue: " + ticket.issue + "\n" +
+                    "Status: " + ticket.status + "\n\n";
+            });
+
+            addMessage(text, "bot");
+
+        } catch (error) {
+
+            console.error(error);
+
+            addMessage(
+                "Unable to load support tickets.",
+                "bot"
+            );
+        }
+    }
+
+
+    // ========================================
+    // 12. VOICE RECOGNITION
+    // ========================================
+
+    function startVoice() {
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            alert(
+                "Voice recognition is not supported in this browser. " +
+                "Try a supported browser such as Chrome."
+            );
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = function () {
+            voiceButton.textContent = "🔴";
+            voiceButton.classList.add("listening");
+            voiceButton.disabled = true;
+        };
+
+        recognition.onresult = function (event) {
+
+            const transcript =
+                event.results[0][0].transcript;
+
+            messageInput.value = transcript;
+            messageInput.focus();
+        };
+
+        recognition.onerror = function (event) {
+
+            console.error(
+                "Speech recognition error:",
+                event.error
+            );
+
+            if (event.error !== "no-speech") {
+                alert(
+                    "Microphone error: " + event.error
+                );
+            }
+        };
+
+        recognition.onend = function () {
+            voiceButton.textContent = "🎤";
+            voiceButton.classList.remove("listening");
+            voiceButton.disabled = false;
+        };
+
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
+    // ========================================
+    // 13. DARK MODE
+    // ========================================
+
+    function updateThemeButton() {
+
+        const button = document.getElementById(
+            "themeButton"
+        );
+
+        if (document.body.classList.contains("dark")) {
+            button.textContent = "☀️ Light Mode";
+        } else {
+            button.textContent = "🌙 Dark Mode";
+        }
+    }
+
+
+    function toggleDarkMode() {
+
+        document.body.classList.toggle("dark");
+
+        localStorage.setItem(
+            "darkMode",
+            document.body.classList.contains("dark")
+        );
+
+        updateThemeButton();
+    }
+
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark");
+    }
+
+    updateThemeButton();
+
+
+    // ========================================
+    // 14. CHECK BACKEND STATUS
+    // ========================================
+
+    async function checkServerStatus() {
+
+        const statusText = document.getElementById(
+            "statusText"
+        );
+
+        const statusDot = document.querySelector(
+            ".status-dot"
+        );
+
+        try {
+
+            const response = await fetch("/health");
+
+            if (!response.ok) {
+                throw new Error("Server unavailable");
+            }
+
+            statusText.textContent = "Online";
+            statusDot.style.background = "#22c55e";
+
+        } catch (error) {
+
+            statusText.textContent = "Offline";
+            statusDot.style.background = "#ef4444";
+        }
+    }
+
+
+    // ========================================
+    // 15. INITIALIZE APPLICATION
+    // ========================================
+
+    checkServerStatus();
+    loadHistory();
+
 </script>
 
 </body>
